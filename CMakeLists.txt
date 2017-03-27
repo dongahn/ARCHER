@@ -70,8 +70,7 @@ if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
   set(ARCHER_STANDALONE_BUILD TRUE)
 endif()
 
-if ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
-  # require at least clang 3.9
+if("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
   if (CMAKE_C_COMPILER_VERSION VERSION_LESS 3.9)
     message(FATAL_ERROR "Clang version must be at least 3.9!")
   endif()
@@ -87,9 +86,9 @@ add_definitions(-DLLVM_VERSION=${LLVM_VERSION})
 include(LibarcherUtils)
 
 # Check is OSX or Linux (for lib extension)
-if(APPLE)
+if(${APPLE})
   set(EXT .dylib)
-elseif(UNIX)
+elseif(${UNIX})
   set(EXT .so)
 endif()
 

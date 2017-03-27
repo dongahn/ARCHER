@@ -60,9 +60,9 @@ done
 
 if [ $linking == yes ] ; then
     if [ @LIBOMP_TSAN_SUPPORT@ == FALSE ] ; then
-  	link_flags="-L@OMP_PREFIX@/lib -Wl,-rpath=@OMP_PREFIX@/lib -L@CMAKE_INSTALL_PREFIX@/lib -Wl,-rpath=@CMAKE_INSTALL_PREFIX@/lib -larcher"
+  	link_flags="-L@OMP_PREFIX@/lib -Wl,-rpath,@OMP_PREFIX@/lib -L@CMAKE_INSTALL_PREFIX@/lib -Wl,-rpath,@CMAKE_INSTALL_PREFIX@/lib -larcher"
     else
-  	link_flags="-L@OMP_PREFIX@/lib -Wl,-rpath=@OMP_PREFIX@/lib"
+  	link_flags="-L@OMP_PREFIX@/lib -Wl,-rpath,@OMP_PREFIX@/lib"
     fi
 else
   link_flags=""

@@ -88,7 +88,7 @@ namespace {
 
 struct InstrumentParallel : public FunctionPass {
   InstrumentParallel() : FunctionPass(ID) { PassName = "InstrumentParallel"; }
-#if LLVM_VERSION > MIN_VERSION
+#if (LLVM_VERSION > MIN_VERSION)
   StringRef getPassName() const override;
 #else
   const char *getPassName() const override;
@@ -114,7 +114,7 @@ INITIALIZE_PASS_END(
     "InstrumentParallel: instrument parallel functions.",
     false, false)
 
-#if LLVM_VERSION > MIN_VERSION
+#if (LLVM_VERSION > MIN_VERSION)
 	StringRef InstrumentParallel::getPassName() const {
 		return PassName;
 	}
@@ -184,9 +184,10 @@ bool InstrumentParallel::runOnFunction(Function &F) {
     Constant* c = M->getOrInsertFunction("__tsan_default_suppressions",
                                          IRB.getInt8PtrTy(),
                                          NULL);
+
     Constant *suppression_str_const =
       ConstantDataArray::getString(M->getContext(),
-      "called_from_lib:libomp.so\nthread:^__kmp_create_worker$\n", true);
+      "called_from_lib:libomp.*\nthread:^__kmp_create_worker$\n", true);
     suppression_str->setInitializer(suppression_str_const);
     Function* __tsan_default_suppressions = cast<Function>(c);
     __tsan_default_suppressions->setCallingConv(CallingConv::C);
@@ -195,7 +196,7 @@ bool InstrumentParallel::runOnFunction(Function &F) {
     builder.CreateRet(suppression_str);
 #endif
 
-#if LLVM_VERSION >= 40
+#if (LLVM_VERSION >= 40)
     IRBuilder<> IRB2(M->getContext());
     Constant* constant = M->getOrInsertFunction("__swordomp__get_omp_status",
     		IRB2.getInt32Ty(),
