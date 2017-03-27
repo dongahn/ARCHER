@@ -406,7 +406,7 @@ static void
 ompt_tsan_thread_end(
   ompt_data_t *thread_data)
 {
-  printf("%lu: total PD: %lu / %i TD: %lu / %i TG: %lu / %i\n", thread_data->value, pdp->total - pdp->DataPointer.size(), pdp->total, tdp->total - tdp->DataPointer.size(),
+  printf("%llu: total PD: %lu / %i TD: %lu / %i TG: %lu / %i\n", thread_data->value, pdp->total - pdp->DataPointer.size(), pdp->total, tdp->total - tdp->DataPointer.size(),
     tdp->total, tgp->total - tgp->DataPointer.size(), tgp->total);
   COUNT_EVENT1(thread_end);
 }
