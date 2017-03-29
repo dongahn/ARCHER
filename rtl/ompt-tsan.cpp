@@ -881,6 +881,7 @@ ompt_fns_t* ompt_start_tool(
   unsigned int omp_version,
   const char *runtime_version)
 {
+  printf("Cicciobombo\n");
   static ompt_fns_t ompt_fns = {&ompt_tsan_initialize,&ompt_tsan_finalize};
   return &ompt_fns;
 }
