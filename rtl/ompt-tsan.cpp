@@ -68,7 +68,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 
 #include <sys/resource.h>
+#define _OPENMP
+#include "omp.h"
+#if !defined(__powerpc64__)
 #include <ompt.h>
+#endif
 
 callback_counter_t *all_counter;
 __thread callback_counter_t* this_event_counter;
@@ -634,7 +638,8 @@ ompt_tsan_task_create(
   if (type == ompt_task_initial)
   {
     ompt_data_t* parallel_data;
-    ompt_get_parallel_info(0, &parallel_data, NULL);
+    int team_size = 1;
+    ompt_get_parallel_info(0, &parallel_data, &team_size);
     ParallelData* PData = new ParallelData;
     parallel_data->ptr = PData;
 
@@ -869,9 +874,15 @@ static void ompt_tsan_mutex_released(
   }
 }
 
-#define SET_CALLBACK_T(event, type) \
+#define SET_CALLBACK_T(event, type)                           \
+do{                                                           \
   ompt_callback_##type##_t tsan_##event = &ompt_tsan_##event; \
-  ompt_set_callback(ompt_callback_##event, (ompt_callback_t) tsan_##event)
+  int ret = ompt_set_callback(ompt_callback_##event,          \
+      (ompt_callback_t) tsan_##event);                        \
+  if (ret != ompt_set_always)                                 \
+      printf("Registered callback '" #event                   \
+            "' is not always invoked (%i)\n", ret);           \
+}while(0)
 
 #define SET_CALLBACK(event) SET_CALLBACK_T(event, event)
 
