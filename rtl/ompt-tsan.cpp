@@ -624,7 +624,7 @@ ompt_tsan_task_create(
     ompt_data_t *parent_task_data,    /* id of parent task            */
     const ompt_frame_t *parent_frame,  /* frame data for parent task   */
     ompt_data_t* new_task_data,      /* id of created task           */
-    int type,
+    ompt_task_type_t type,
     int has_dependences,
     const void *codeptr_ra)               /* pointer to outlined function */
 {
@@ -641,7 +641,7 @@ ompt_tsan_task_create(
     Data = new TaskData(PData);
     new_task_data->ptr = Data;
     COUNT_EVENT2(task_create,initial);
-  } else if (type & ompt_task_undeferred) {
+  } else if (type & omp_state_undefined) {
     Data = new TaskData(ToTaskData(parent_task_data));
     new_task_data->ptr = Data;
     Data->Included=true;
@@ -884,7 +884,7 @@ do{                                                           \
 
 static int ompt_tsan_initialize(
   ompt_function_lookup_t lookup,
-  ompt_data_t *tool_data
+  ompt_fns_t *tool_data
   ) {
 
   const char *options = getenv("ARCHER_OPTIONS");
@@ -925,7 +925,7 @@ static int ompt_tsan_initialize(
 }
 
 
-static void ompt_tsan_finalize(ompt_data_t *tool_data)
+static void ompt_tsan_finalize(ompt_fns_t *tool_data)
 {
   if(archer_flags->print_ompt_counters) {
     print_callbacks(all_counter);
@@ -942,10 +942,10 @@ static void ompt_tsan_finalize(ompt_data_t *tool_data)
     delete archer_flags;
 }
 
-ompt_start_tool_result_t* ompt_start_tool(
+ompt_fns_t* ompt_start_tool(
   unsigned int omp_version,
   const char *runtime_version)
 {
-  static ompt_start_tool_result_t ompt_start_tool_result = {&ompt_tsan_initialize,&ompt_tsan_finalize, 0};
+  static ompt_fns_t ompt_start_tool_result = {&ompt_tsan_initialize,&ompt_tsan_finalize};
   return &ompt_start_tool_result;
 }
